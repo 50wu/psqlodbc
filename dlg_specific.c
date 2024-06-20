@@ -370,6 +370,9 @@ MYLOG(DETAIL_LOG_LEVEL, "hlen=" FORMAT_SSIZE_T "\n", hlen);
 			ABBR_NUMERIC_AS "=%d;"
 			INI_OPTIONAL_ERRORS "=%d;"
 			INI_FETCHREFCURSORS "=%d;"
+#ifdef	WIN32
+			INI_GSSAUTHUSEGSSAPI "=%d;"
+#endif /* WIN32 */
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 			INI_XAOPT "=%d"	/* XAOPT */
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
@@ -405,6 +408,9 @@ MYLOG(DETAIL_LOG_LEVEL, "hlen=" FORMAT_SSIZE_T "\n", hlen);
 			,ci->numeric_as
 			,ci->optional_errors
 			,ci->fetch_refcursors
+#ifdef	WIN32
+			,ci->gssauth_use_gssapi
+#endif /* WIN32 */
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 			,ci->xa_opt
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
@@ -465,6 +471,8 @@ MYLOG(DETAIL_LOG_LEVEL, "hlen=" FORMAT_SSIZE_T "\n", hlen);
 			flag |= BIT_OPTIONALERRORS;
 		if (ci->fetch_refcursors)
 			flag |= BIT_FETCHREFCURSORS;
+		if (ci->gssauth_use_gssapi)
+			flag |= BIT_GSSAUTHUSEGSSAPI;
 
 		if (ci->sslmode[0])
 		{
@@ -588,6 +596,7 @@ unfoldCXAttribute(ConnInfo *ci, const char *value)
 	ci->lower_case_identifier = (char)((flag & BIT_LOWERCASEIDENTIFIER) != 0);
 	ci->optional_errors = (char)((flag & BIT_OPTIONALERRORS) != 0);
 	ci->fetch_refcursors = (char)((flag & BIT_FETCHREFCURSORS) != 0);
+	ci->gssauth_use_gssapi = (char)((flag & BIT_GSSAUTHUSEGSSAPI) != 0);
 }
 
 BOOL
@@ -693,6 +702,8 @@ copyConnAttributes(ConnInfo *ci, const char *attribute, const char *value)
 		ci->use_server_side_prepare = atoi(value);
 	else if (stricmp(attribute, INI_LOWERCASEIDENTIFIER) == 0 || stricmp(attribute, ABBR_LOWERCASEIDENTIFIER) == 0)
 		ci->lower_case_identifier = atoi(value);
+	else if (stricmp(attribute, INI_GSSAUTHUSEGSSAPI) == 0 || stricmp(attribute, ABBR_GSSAUTHUSEGSSAPI) == 0)
+		ci->gssauth_use_gssapi = atoi(value);
 	else if (stricmp(attribute, INI_KEEPALIVETIME) == 0 || stricmp(attribute, ABBR_KEEPALIVETIME) == 0)
 		ci->keepalive_idle = atoi(value);
 	else if (stricmp(attribute, INI_KEEPALIVEINTERVAL) == 0 || stricmp(attribute, ABBR_KEEPALIVEINTERVAL) == 0)
@@ -832,6 +843,7 @@ getCiDefaults(ConnInfo *ci)
 	ci->bytea_as_longvarbinary = DEFAULT_BYTEAASLONGVARBINARY;
 	ci->use_server_side_prepare = DEFAULT_USESERVERSIDEPREPARE;
 	ci->lower_case_identifier = DEFAULT_LOWERCASEIDENTIFIER;
+	ci->gssauth_use_gssapi = DEFAULT_GSSAUTHUSEGSSAPI;
 	STRCPY_FIXED(ci->sslmode, DEFAULT_SSLMODE);
 	ci->force_abbrev_connstr = 0;
 	ci->fake_mss = 0;
@@ -1074,6 +1086,9 @@ MYLOG(0, "drivername=%s\n", drivername);
 
 	if (SQLGetPrivateProfileString(DSN, INI_LOWERCASEIDENTIFIER, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
 		ci->lower_case_identifier = atoi(temp);
+
+	if (SQLGetPrivateProfileString(DSN, INI_GSSAUTHUSEGSSAPI, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
+		ci->gssauth_use_gssapi = atoi(temp);
 
 	if (SQLGetPrivateProfileString(DSN, INI_KEEPALIVETIME, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
 		if (0 == (ci->keepalive_idle = atoi(temp)))
@@ -1359,6 +1374,11 @@ writeDSNinfo(const ConnInfo *ci)
 	ITOA_FIXED(temp, ci->lower_case_identifier);
 	SQLWritePrivateProfileString(DSN,
 								 INI_LOWERCASEIDENTIFIER,
+								 temp,
+								 ODBC_INI);
+	ITOA_FIXED(temp, ci->gssauth_use_gssapi);
+	SQLWritePrivateProfileString(DSN,
+								 INI_GSSAUTHUSEGSSAPI,
 								 temp,
 								 ODBC_INI);
 	SQLWritePrivateProfileString(DSN,
@@ -1799,6 +1819,7 @@ CC_conninfo_init(ConnInfo *conninfo, UInt4 option)
 	conninfo->accessible_only = -1;
 	conninfo->ignore_round_trip_time = -1;
 	conninfo->disable_keepalive = -1;
+	conninfo->gssauth_use_gssapi = -1;
 	conninfo->keepalive_idle = -1;
 	conninfo->keepalive_interval = -1;
 	conninfo->disable_convert_func = -1;
@@ -1902,6 +1923,7 @@ CC_copy_conninfo(ConnInfo *ci, const ConnInfo *sci)
 	CORR_VALCPY(ignore_round_trip_time);
 	CORR_VALCPY(disable_keepalive);
 	CORR_VALCPY(disable_convert_func);
+	CORR_VALCPY(gssauth_use_gssapi);
 	CORR_VALCPY(extra_opts);
 	CORR_VALCPY(keepalive_idle);
 	CORR_VALCPY(keepalive_interval);

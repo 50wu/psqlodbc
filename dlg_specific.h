@@ -160,6 +160,8 @@ extern "C" {
 #define ABBR_SSLMODE			"CA"
 #define INI_EXTRAOPTIONS		"AB"
 #define INI_LOGDIR			"Logdir"
+#define INI_GSSAUTHUSEGSSAPI		"GssAuthUseGSS"
+#define ABBR_GSSAUTHUSEGSSAPI		"D0"
 #define INI_KEEPALIVETIME		"KeepaliveTime"
 #define ABBR_KEEPALIVETIME		"D1"
 #define INI_KEEPALIVEINTERVAL		"KeepaliveInterval"
@@ -223,6 +225,7 @@ extern "C" {
 #define BIT_LOWERCASEIDENTIFIER			(1L<<26)
 #define BIT_OPTIONALERRORS			(1L<<27)
 #define BIT_FETCHREFCURSORS			(1L<<28)
+#define BIT_GSSAUTHUSEGSSAPI			(1L<<29)
 
 #define EFFECTIVE_BIT_COUNT			28
 
@@ -278,6 +281,7 @@ extern "C" {
 #define DEFAULT_BATCH_SIZE		100
 #define DEFAULT_IGNORETIMEOUT		0
 #define DEFAULT_FETCHREFCURSORS		0
+#define DEFAULT_GSSAUTHUSEGSSAPI	0
 
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 #define DEFAULT_XAOPT			1
