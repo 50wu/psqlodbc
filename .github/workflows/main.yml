@@ -229,7 +229,7 @@ jobs:
       if: ${{steps.cachePostgres.outputs.cache-hit != 'true'}}
       working-directory: postgresql
       run: |
-        meson setup buildx86 -Dssl=openssl -Dextra_lib_dirs=c:\openssl32\lib\VC\x86\MT -Dextra_include_dirs=c:\openssl32\include --prefix=d:\postgresql86
+        meson setup buildx86 -Dgssapi=enabled -Dssl=openssl -Dextra_lib_dirs=c:\openssl32\lib\VC\x86\MT -Dextra_include_dirs=c:\openssl32\include --prefix=d:\postgresql86
         cd buildx86
         ninja -v 
         ninja -v install
@@ -243,7 +243,7 @@ jobs:
       if: ${{steps.cachePostgres.outputs.cache-hit != 'true'}}
       working-directory: postgresql
       run: |
-        meson setup build -Dssl=openssl -Dextra_lib_dirs=c:\openssl64\lib\VC\x64\MT -Dextra_include_dirs=c:\openssl64\include --prefix=d:\postgresql
+        meson setup build -Dgssapi=enabled -Dssl=openssl -Dextra_lib_dirs=c:\openssl64\lib\VC\x64\MT -Dextra_include_dirs=c:\openssl64\include --prefix=d:\postgresql
         cd build
         ninja
         ninja install
