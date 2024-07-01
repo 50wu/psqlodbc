@@ -226,7 +226,7 @@ jobs:
       with: 
         arch: x86
     - name: 'build postgresx86'    
-      if: ${{steps.cachePostgres.outputs.cache-hit != 'true'}}
+      if: ${{steps.cachePostgres.outputs.cache-hit == 'true'}}
       working-directory: postgresql
       run: |
         meson setup buildx86 -Dgssapi=enabled -Dssl=openssl -Dextra_lib_dirs=c:\openssl32\lib\VC\x86\MT -Dextra_include_dirs=c:\openssl32\include --prefix=d:\postgresql86
@@ -240,7 +240,7 @@ jobs:
       with: 
         arch: x64
     - name : 'build postgres x64'
-      if: ${{steps.cachePostgres.outputs.cache-hit != 'true'}}
+      if: ${{steps.cachePostgres.outputs.cache-hit == 'true'}}
       working-directory: postgresql
       run: |
         meson setup build -Dgssapi=enabled -Dssl=openssl -Dextra_lib_dirs=c:\openssl64\lib\VC\x64\MT -Dextra_include_dirs=c:\openssl64\include --prefix=d:\postgresql
