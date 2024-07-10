@@ -616,6 +616,10 @@ copyConnAttributes(ConnInfo *ci, const char *attribute, const char *value)
 		STRCPY_FIXED(ci->drivername, value);
 	else if (stricmp(attribute, INI_KDESC) == 0)
 		STRCPY_FIXED(ci->desc, value);
+	else if (stricmp(attribute, INI_PGGSSLIB) == 0)
+		STRCPY_FIXED(ci->gsslib, value);
+	else if (stricmp(attribute, INI_KRB5CCNAME) == 0)
+		STRCPY_FIXED(ci->krb5ccname, value);
 	else if (stricmp(attribute, INI_DATABASE) == 0 || stricmp(attribute, ABBR_DATABASE) == 0)
 		STRCPY_FIXED(ci->database, value);
 	else if (stricmp(attribute, INI_SERVER) == 0 || stricmp(attribute, SPEC_SERVER) == 0)
@@ -974,6 +978,12 @@ MYLOG(0, "drivername=%s\n", drivername);
 	if (SQLGetPrivateProfileString(DSN, INI_PORT, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
 		STRCPY_FIXED(ci->port, temp);
 
+	if (SQLGetPrivateProfileString(DSN, INI_PGGSSLIB, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
+		STRCPY_FIXED(ci->gsslib, temp);
+
+	if (SQLGetPrivateProfileString(DSN, INI_KRB5CCNAME, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
+		STRCPY_FIXED(ci->krb5ccname, temp);
+
 	/* It's appropriate to handle debug and commlog here */
 	if (SQLGetPrivateProfileString(DSN, INI_DEBUG, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
 		ci->drivers.debug = atoi(temp);
@@ -1263,6 +1273,16 @@ writeDSNinfo(const ConnInfo *ci)
 								 ci->username,
 								 ODBC_INI);
 	SQLWritePrivateProfileString(DSN, INI_UID, ci->username, ODBC_INI);
+
+	SQLWritePrivateProfileString(DSN,
+								 INI_PGGSSLIB,
+								 ci->gsslib,
+								 ODBC_INI);
+
+	SQLWritePrivateProfileString(DSN,
+								 INI_KRB5CCNAME,
+								 ci->krb5ccname,
+								 ODBC_INI);
 
 	encode(ci->password, encoded_item, sizeof(encoded_item));
 	SQLWritePrivateProfileString(DSN,

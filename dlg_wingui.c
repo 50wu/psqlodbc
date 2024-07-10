@@ -71,6 +71,8 @@ SetDlgStuff(HWND hdlg, const ConnInfo *ci)
 	SetDlgItemText(hdlg, IDC_USER, ci->username);
 	SetDlgItemText(hdlg, IDC_PASSWORD, SAFE_NAME(ci->password));
 	SetDlgItemText(hdlg, IDC_PORT, ci->port);
+	SetDlgItemText(hdlg, IDC_PGGSSLIB, ci->gsslib);
+	SetDlgItemText(hdlg, IDC_KRB5CCNAME, ci->krb5ccname);
 
 	dsplevel = 0;
 
@@ -120,6 +122,8 @@ GetDlgStuff(HWND hdlg, ConnInfo *ci)
 	GetDlgItemText(hdlg, IDC_SERVER, ci->server, sizeof(ci->server));
 	GetDlgItemText(hdlg, IDC_USER, ci->username, sizeof(ci->username));
 	GetDlgItemText(hdlg, IDC_PASSWORD, medium_buf, sizeof(medium_buf));
+	GetDlgItemText(hdlg, IDC_PGGSSLIB, ci->gsslib, sizeof(ci->gsslib));
+	GetDlgItemText(hdlg, IDC_KRB5CCNAME, ci->krb5ccname, sizeof(ci->krb5ccname));
 	STR_TO_NAME(ci->password, medium_buf);
 	GetDlgItemText(hdlg, IDC_PORT, ci->port, sizeof(ci->port));
 	sslposition = (int)(DWORD)SendMessage(GetDlgItem(hdlg, IDC_SSLMODE), CB_GETCURSEL, 0L, 0L);

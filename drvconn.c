@@ -382,6 +382,10 @@ dconn_FDriverConnectProc(
 				EnableWindow(GetDlgItem(hdlg, IDC_SERVER), FALSE);
 			if ('\0' != ci->port[0])
 				EnableWindow(GetDlgItem(hdlg, IDC_PORT), FALSE);
+			if ('\0' != ci->gsslib[0])
+				EnableWindow(GetDlgItem(hdlg, IDC_PGGSSLIB), FALSE);
+			if ('\0' != ci->krb5ccname[0])
+				EnableWindow(GetDlgItem(hdlg, IDC_KRB5CCNAME), FALSE);
 
 			SetWindowLongPtr(hdlg, DWLP_USER, lParam);					/* Save the ConnInfo for the "OK" */
 			SetDlgStuff(hdlg, ci);
@@ -400,6 +404,10 @@ dconn_FDriverConnectProc(
 				SetFocus(GetDlgItem(hdlg, IDC_SERVER));
 			else if (ci->port[0] == '\0')
 				SetFocus(GetDlgItem(hdlg, IDC_PORT));
+			else if (ci->gsslib[0] == '\0')
+				SetFocus(GetDlgItem(hdlg, IDC_PGGSSLIB));
+			else if (ci->krb5ccname[0] == '\0')
+				SetFocus(GetDlgItem(hdlg, IDC_KRB5CCNAME));
 			else if (ci->username[0] == '\0')
 				SetFocus(GetDlgItem(hdlg, IDC_USER));
 			else if (SAFE_NAME(ci->password)[0] == '\0' &&

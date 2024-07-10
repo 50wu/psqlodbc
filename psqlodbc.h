@@ -668,6 +668,8 @@ typedef struct
 	char		server[MEDIUM_REGISTRY_LEN];
 	char		database[MEDIUM_REGISTRY_LEN];
 	char		username[MEDIUM_REGISTRY_LEN];
+	char		gsslib[MEDIUM_REGISTRY_LEN];
+	char		krb5ccname[MEDIUM_REGISTRY_LEN];
 	pgNAME		password;
 	char		port[SMALL_REGISTRY_LEN];
 	char		sslmode[16];

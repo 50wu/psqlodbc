@@ -55,6 +55,8 @@ extern "C" {
 #define INI_UID				"UID"		/* Default User Name */
 #define INI_USERNAME			"Username"	/* Default User Name */
 #define INI_PASSWORD			"Password"	/* Default Password */
+#define INI_PGGSSLIB            "GSSLib"    /* Default Library for security authentication */
+#define INI_KRB5CCNAME          "KRB5CCNAME" /* Default Kerberos credential cache location */
 
 #define	INI_ABBREVIATE			"CX"
 #define INI_DEBUG			"Debug"		/* Debug flag */
