@@ -370,6 +370,9 @@ MYLOG(DETAIL_LOG_LEVEL, "hlen=" FORMAT_SSIZE_T "\n", hlen);
 			ABBR_NUMERIC_AS "=%d;"
 			INI_OPTIONAL_ERRORS "=%d;"
 			INI_FETCHREFCURSORS "=%d;"
+#ifdef	WIN32
+			INI_GSSAUTHUSEGSSAPI "=%d;"
+#endif /* WIN32 */
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 			INI_XAOPT "=%d"	/* XAOPT */
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
@@ -405,6 +408,9 @@ MYLOG(DETAIL_LOG_LEVEL, "hlen=" FORMAT_SSIZE_T "\n", hlen);
 			,ci->numeric_as
 			,ci->optional_errors
 			,ci->fetch_refcursors
+#ifdef	WIN32
+			,ci->gssauth_use_gssapi
+#endif /* WIN32 */
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 			,ci->xa_opt
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
@@ -465,6 +471,8 @@ MYLOG(DETAIL_LOG_LEVEL, "hlen=" FORMAT_SSIZE_T "\n", hlen);
 			flag |= BIT_OPTIONALERRORS;
 		if (ci->fetch_refcursors)
 			flag |= BIT_FETCHREFCURSORS;
+		if (ci->gssauth_use_gssapi)
+			flag |= BIT_GSSAUTHUSEGSSAPI;
 
 		if (ci->sslmode[0])
 		{
@@ -588,6 +596,7 @@ unfoldCXAttribute(ConnInfo *ci, const char *value)
 	ci->lower_case_identifier = (char)((flag & BIT_LOWERCASEIDENTIFIER) != 0);
 	ci->optional_errors = (char)((flag & BIT_OPTIONALERRORS) != 0);
 	ci->fetch_refcursors = (char)((flag & BIT_FETCHREFCURSORS) != 0);
+	ci->gssauth_use_gssapi = (char)((flag & BIT_GSSAUTHUSEGSSAPI) != 0);
 }
 
 BOOL
@@ -803,6 +812,8 @@ copyConnAttributes(ConnInfo *ci, const char *attribute, const char *value)
 		STRCPY_FIXED(ci->drivers.extra_systable_prefixes, value);
 	else if (stricmp(attribute, INI_FETCHREFCURSORS) == 0 || stricmp(attribute, ABBR_FETCHREFCURSORS) == 0)
 		ci->fetch_refcursors = atoi(value);
+	else if (stricmp(attribute, INI_GSSAUTHUSEGSSAPI) == 0 || stricmp(attribute, ABBR_GSSAUTHUSEGSSAPI) == 0)
+		ci->gssauth_use_gssapi = atoi(value);
 	else
 		found = FALSE;
 
@@ -853,6 +864,7 @@ getCiDefaults(ConnInfo *ci)
 	}
 	ci->disable_convert_func = 0;
 	ci->fetch_refcursors = DEFAULT_FETCHREFCURSORS;
+	ci->gssauth_use_gssapi = DEFAULT_GSSAUTHUSEGSSAPI;
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 	ci->xa_opt = DEFAULT_XAOPT;
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
@@ -1095,6 +1107,9 @@ MYLOG(0, "drivername=%s\n", drivername);
 
 	if (SQLGetPrivateProfileString(DSN, INI_FETCHREFCURSORS, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
 		ci->fetch_refcursors = atoi(temp);
+
+	if (SQLGetPrivateProfileString(DSN, INI_GSSAUTHUSEGSSAPI, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
+		ci->gssauth_use_gssapi = atoi(temp);
 
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 	if (SQLGetPrivateProfileString(DSN, INI_XAOPT, NULL_STRING, temp, sizeof(temp), ODBC_INI) > 0)
@@ -1391,6 +1406,11 @@ writeDSNinfo(const ConnInfo *ci)
 	ITOA_FIXED(temp, ci->fetch_refcursors);
 	SQLWritePrivateProfileString(DSN,
 								 INI_FETCHREFCURSORS,
+								 temp,
+								 ODBC_INI);
+	ITOA_FIXED(temp, ci->gssauth_use_gssapi);
+	SQLWritePrivateProfileString(DSN,
+								 INI_GSSAUTHUSEGSSAPI,
 								 temp,
 								 ODBC_INI);
 #ifdef	_HANDLE_ENLIST_IN_DTC_
@@ -1809,6 +1829,7 @@ CC_conninfo_init(ConnInfo *conninfo, UInt4 option)
 	conninfo->ignore_timeout = DEFAULT_IGNORETIMEOUT;
 	conninfo->wcs_debug = -1;
 	conninfo->fetch_refcursors = -1;
+	conninfo->gssauth_use_gssapi = -1;
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 	conninfo->xa_opt = -1;
 #endif /* _HANDLE_ENLIST_IN_DTC_ */
@@ -1911,6 +1932,7 @@ CC_copy_conninfo(ConnInfo *ci, const ConnInfo *sci)
 	CORR_VALCPY(batch_size);
 	CORR_VALCPY(ignore_timeout);
 	CORR_VALCPY(fetch_refcursors);
+	CORR_VALCPY(gssauth_use_gssapi);
 #ifdef	_HANDLE_ENLIST_IN_DTC_
 	CORR_VALCPY(xa_opt);
 #endif

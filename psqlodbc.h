@@ -705,6 +705,7 @@ typedef struct
 	signed char	optional_errors;
 	signed char	ignore_timeout;
 	signed char	fetch_refcursors;
+	signed char	gssauth_use_gssapi;
 	UInt4		extra_opts;
 	Int4		keepalive_idle;
 	Int4		keepalive_interval;

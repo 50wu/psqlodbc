@@ -199,6 +199,7 @@ MYLOG(0, "entering src=%d\n", src);
 	CheckDlgButton(hdlg, DRV_UNKNOWNS_LONGVARCHAR, comval->unknowns_as_longvarchar);
 	CheckDlgButton(hdlg, DRV_BOOLS_CHAR, comval->bools_as_char);
 	CheckDlgButton(hdlg, DRV_PARSE, comval->parse);
+	CheckDlgButton(hdlg, DS_GSSAUTHUSEGSSAPI, ci->gssauth_use_gssapi);
 
 	CheckDlgButton(hdlg, DRV_DEBUG, comval->debug > 0);
 	SetDlgItemInt(hdlg, DS_DEBUG, comval->debug, FALSE);
@@ -272,6 +273,7 @@ MYLOG(3, "entering\n");
 	GetDlgItemText(hdlg, DRV_EXTRASYSTABLEPREFIXES, comval->extra_systable_prefixes, sizeof(comval->extra_systable_prefixes));
 	ci->batch_size = GetDlgItemInt(hdlg, DS_BATCH_SIZE, NULL, FALSE);
 	ci->ignore_timeout = IsDlgButtonChecked(hdlg, DS_IGNORETIMEOUT);
+	ci->gssauth_use_gssapi = IsDlgButtonChecked(hdlg, DS_GSSAUTHUSEGSSAPI);
 
 	/* fall through */
 	return 0;
